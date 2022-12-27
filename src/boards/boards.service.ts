@@ -10,15 +10,30 @@ import { CreateBoardDto } from './dto/create-board.dto';
 export class BoardsService {
 
     constructor(
-        @InjectRepository(BoardRepository)
+        @InjectRepository(Board)
         private boardRepository: BoardRepository,
     ) { }
 
+    async createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
+        const { title, description } = createBoardDto;
+
+        const board = this.boardRepository.create({
+            title,
+            description,
+            status: BoardStatus.PUBLIC
+        })
+
+        await this.boardRepository.save(board);
+        return board;
+
+    }
+
+
     async getBoardById(id: number): Promise<Board> {
-        const found = await this.boardRepository.findOne(id);
+        const found = await this.boardRepository.findOne({ where: { id } });
 
         if (!found) {
-            throw new NotFoundException('Can\'t find Board with id ${id}')
+            throw new NotFoundException(`Can't find Board with id ${id}`);
         }
 
         return found;
