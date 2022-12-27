@@ -1,17 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Board } from './board.model';
 import { BoardsService } from './boards.service';
 
 @Controller('boards')
 export class BoardsController {
-    constructor(private boardsService: BoardsService, getAllBoards: BoardsService) { }
+    constructor(private boardsService: BoardsService) { }
 
-    /**
-     * 모든 게시글을 조회합니다.
-     * @returns 
-     */
-    @Get()
-    getAllBoard() {
+    @Get('/')
+    getAllBoard(): Board[] {
         return this.boardsService.getAllBoards();
+    }
+
+    @Post()
+    createBoard(@Body('title') title: string,
+        @Body('description') description: string): Board {
+
+        return this.boardsService.createBoard(title, description);
+
     }
 
 }
