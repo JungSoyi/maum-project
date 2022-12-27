@@ -4,6 +4,7 @@ import { v1 as uuid } from 'uuid';
 import { BoardStatus } from './board-status.enum';
 import { Board } from './board.entity';
 import { BoardRepository } from './board.repository';
+
 import { CreateBoardDto } from './dto/create-board.dto';
 
 @Injectable()
@@ -34,6 +35,7 @@ export class BoardsService {
 
         if (!found) {
             throw new NotFoundException(`Can't find Board with id ${id}`);
+
         }
 
         return found;
