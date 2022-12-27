@@ -42,5 +42,26 @@ export class BoardsController {
         return this.boardsService.deleteBoard(id);
     }
 
+    /**
+     * 게시글의 id를 이용해서 특정 게시글의 상태를 변경합니다.
+     * @param id 
+     * @param status 
+     * @returns 
+     */
+    @Patch('/:id/status')
+    updateBoardStatus(
+        @Param('id', ParseIntPipe) id: number,
+        @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+    ): Promise<Board> {
+        return this.boardsService.updateBoardStatus(id, status);
+    }
 
+    /**
+     * 등록된 모든 게시글을 조회합니다.
+     * @returns 
+     */
+    @Get()
+    getAllBoard(): Promise<Board[]> {
+        return this.boardsService.getAlllBoards();
+    }
 }
