@@ -3,7 +3,5 @@ import { BoardsModule } from './boards/boards.module';
 
 @Module({
   imports: [BoardsModule],
-  controllers: [AppController],
-  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
