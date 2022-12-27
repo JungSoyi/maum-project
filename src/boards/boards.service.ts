@@ -1,25 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { Board, BoardStatus } from './board.model';
 import { v1 as uuid } from 'uuid';
+import { Board, BoardStatus } from './board.model';
+import { CreateBoardDto } from './dto/create-board.dto';
 
 @Injectable()
 export class BoardsService {
     private boards: Board[] = [];
 
-    /**
-     * 게시판의 모든 게시글을 조회합니다.
-     * @returns 
-     */
+
     getAllBoards(): Board[] {
         return this.boards;
     }
 
-    /**
-     * 게시판에서 게시물을 작성합니다.
-     * @param title 
-     * @param description 
-     */
-    createBoard(title: string, description: string) {
+
+    createBoard(createBoardDto: CreateBoardDto) {
+        const { title, description } = createBoardDto;
         const board: Board = {
             id: uuid(),
             title,
@@ -32,5 +27,9 @@ export class BoardsService {
 
         this.boards.push(board);
         return board;
+    }
+
+    getBoardById(id: string): Board {
+        return this.boards.find((board) => board.id === id);
     }
 }
