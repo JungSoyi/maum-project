@@ -32,6 +32,11 @@ export class BoardsController {
 
     }
 
+    /**
+     * 게시글의 id를 이용해서 특정 게시글을 삭제합니다.
+     * @param id 
+     * @returns 
+     */
     @Delete('/:id')
     deleteBoard(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.boardsService.deleteBoard(id);
