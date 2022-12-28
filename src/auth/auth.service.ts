@@ -13,6 +13,12 @@ export class AuthService {
     ) { }
 
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-        return this.userRepository.createUser(authCredentialsDto);
+
+        const { username, password } = authCredentialsDto;
+        const user = this.userRepository.create({
+            username, password
+        })
+
+        await this.userRepository.save(user);
     }
 }
