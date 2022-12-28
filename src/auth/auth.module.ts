@@ -5,7 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { User } from './user.entity';
+import { JwtStrategy } from './jwt.strategy';
 
+/**
+ * 토큰 유효 시간 : 3600초(1시간)
+ */
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt ' }),
@@ -18,6 +22,7 @@ import { User } from './user.entity';
     TypeOrmModule.forFeature([User])
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtStrategy, PassportModule]
 })
 export class AuthModule { }
