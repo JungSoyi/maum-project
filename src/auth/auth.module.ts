@@ -12,7 +12,7 @@ import { JwtStrategy } from './jwt.strategy';
  */
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt ' }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: 'Secret1234',
       signOptions: {
