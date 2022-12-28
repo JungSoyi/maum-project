@@ -1,4 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 import { BoardStatus } from './board-status.enum';
 import { Board } from './board.entity';
 
@@ -7,6 +10,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
+@UseGuards(AuthGuard())
 export class BoardsController {
     constructor(private boardsService: BoardsService) { }
 
@@ -17,8 +21,9 @@ export class BoardsController {
      */
     @Post()
     @UsePipes(ValidationPipe)
-    createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
-        return this.boardsService.createBoard(createBoardDto);
+    createBoard(@Body() createBoardDto: CreateBoardDto,
+        @GetUser() user: User): Promise<Board> {
+        return this.boardsService.createBoard(createBoardDto, user);
     }
 
     /**
@@ -27,9 +32,11 @@ export class BoardsController {
      * @returns 
      */
     @Get('/:id')
-    getBoardById(@Param('id') id: number): Promise<Board> {
+    getBoardById(@Param('id', ParseIntPipe) id: number,
+        @GetUser() user: User,
+    ): Promise<Board> {
 
-        return this.boardsService.getBoardById(id);
+        return this.boardsService.getBoardById(id, user);
 
     }
 
@@ -53,16 +60,21 @@ export class BoardsController {
     updateBoardStatus(
         @Param('id', ParseIntPipe) id: number,
         @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-    ): Promise<Board> {
-        return this.boardsService.updateBoardStatus(id, status);
+        @GetUser() user: User
+    ) {
+        return this.boardsService.updateBoardStatus(id, status, user);
     }
 
+
     /**
-     * 등록된 모든 게시글을 조회합니다.
+     * 로그인 한 유저의 모든 게시글을 조회합니다.
+     * @param user 
      * @returns 
      */
     @Get()
-    getAllBoard(): Promise<Board[]> {
-        return this.boardsService.getAllBoards();
+    getUserAllBoard(
+        @GetUser() user: User,
+    ): Promise<Board[]> {
+        return this.boardsService.getUserAllBoards(user);
     }
 }
