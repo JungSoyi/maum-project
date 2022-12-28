@@ -32,9 +32,11 @@ export class BoardsController {
      * @returns 
      */
     @Get('/:id')
-    getBoardById(@Param('id') id: number): Promise<Board> {
+    getBoardById(@Param('id', ParseIntPipe) id: number,
+        @GetUser() user: User,
+    ): Promise<Board> {
 
-        return this.boardsService.getBoardById(id);
+        return this.boardsService.getBoardById(id, user);
 
     }
 
@@ -58,13 +60,14 @@ export class BoardsController {
     updateBoardStatus(
         @Param('id', ParseIntPipe) id: number,
         @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-    ): Promise<Board> {
-        return this.boardsService.updateBoardStatus(id, status);
+        @GetUser() user: User
+    ) {
+        return this.boardsService.updateBoardStatus(id, status, user);
     }
 
 
     /**
-     * 
+     * 로그인 한 유저의 모든 게시글을 조회합니다.
      * @param user 
      * @returns 
      */
