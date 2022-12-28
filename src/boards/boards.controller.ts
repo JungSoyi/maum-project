@@ -62,12 +62,16 @@ export class BoardsController {
         return this.boardsService.updateBoardStatus(id, status);
     }
 
+
     /**
-     * 등록된 모든 게시글을 조회합니다.
+     * 
+     * @param user 
      * @returns 
      */
     @Get()
-    getAllBoard(): Promise<Board[]> {
-        return this.boardsService.getAllBoards();
+    getUserAllBoard(
+        @GetUser() user: User,
+    ): Promise<Board[]> {
+        return this.boardsService.getUserAllBoards(user);
     }
 }
