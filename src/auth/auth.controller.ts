@@ -8,6 +8,11 @@ export class AuthController {
         private authService: AuthService,
     ) { }
 
+    /**
+     * username, password를 이용하여 회원가입을 합니다.
+     * @param authCredentialsDto 
+     * @returns 
+     */
     @Post('/signup')
     signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<void> {
         return this.authService.signUp(authCredentialsDto);
