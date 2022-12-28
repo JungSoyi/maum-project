@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/user/user.entity';
 import { Logger } from 'src/logger/logger.decorator';
 import { LoggerService } from 'src/logger/logger.service';
 import { v1 as uuid } from 'uuid';
