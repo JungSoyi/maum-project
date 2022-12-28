@@ -4,15 +4,21 @@ import { AuthCredentialsDto } from './dto/auto-credential.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import *as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
 
     constructor(
         @InjectRepository(User)
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
+        private jwtService: JwtService
     ) { }
 
+    /**
+     * 회원가입 서비스 로직
+     * @param authCredentialsDto 
+     */
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
 
         const { username, password } = authCredentialsDto;
@@ -36,12 +42,20 @@ export class AuthService {
 
     }
 
-    async singIn(authCredentialsDto: AuthCredentialsDto): Promise<string> {
+    /**
+     * 로그인 서비스 로직
+     * @param authCredentialsDto 
+     * @returns 
+     */
+    async singIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
         const { username, password } = authCredentialsDto;
         const user = await this.userRepository.findOne({ username });
 
         if (user && (await bcrypt.compare(password, user.password))) {
-            return 'login Success';
+            const payload = { username };
+            const accessToken = await this.jwtService.sign(payload);
+
+            return { accessToken };
         } else {
             throw new UnauthorizedException('login Failed');
         }
