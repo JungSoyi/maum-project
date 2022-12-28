@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialsDto } from './dto/auto-credential.dto';
 import { User } from './user.entity';
@@ -34,5 +34,16 @@ export class AuthService {
             }
         }
 
+    }
+
+    async singIn(authCredentialsDto: AuthCredentialsDto): Promise<string> {
+        const { username, password } = authCredentialsDto;
+        const user = await this.userRepository.findOne({ username });
+
+        if (user && (await bcrypt.compare(password, user.password))) {
+            return 'login Success';
+        } else {
+            throw new UnauthorizedException('login Failed');
+        }
     }
 }

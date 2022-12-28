@@ -17,4 +17,14 @@ export class AuthController {
     signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<void> {
         return this.authService.signUp(authCredentialsDto);
     }
+
+    /**
+     * username, password를 이용하여 로그인을 합니다.
+     * @param authCredentialsDto 
+     * @returns 
+     */
+    @Post('/signin')
+    signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto) {
+        return this.authService.singIn(authCredentialsDto)
+    }
 }
