@@ -7,12 +7,13 @@ import { Repository } from "typeorm";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { UpdateCommentDto } from "./dto/update-comment.dto";
 import { Comment } from "./entity/comment.entity";
+import { CommentRepository } from "./comment.repository";
 
 @Injectable()
 export class CommentService {
     constructor(
         @InjectRepository(Comment)
-        private commentRepository: Repository<Comment>,
+        private commentRepository: CommentRepository,
         private boardsService: BoardsService,
     ) { }
 
@@ -72,26 +73,34 @@ export class CommentService {
         return found;
     }
 
-    async deleteComment(id: number, user: User) {
-        const query = this.commentRepository.createQueryBuilder('bc');
-        query.select('b.userId');
-        query.innerJoin(Board, 'b', 'bc.boardId = b.id');
-        query.where('bc.id = :id', { id });
-        const result = await query.getRawMany();
+    // async deleteComment(id: number, user: User) {
+    //     const boardUser = await this.commentRepository
+    //         .createQueryBuilder()
+    //         .select('b.userId')
+    //         .from(Board, 'p')
+    //         .innerJoin(Comment, 'bc', 'b.id = bc.boardId')
+    //         .where('bc.id = :id', { id })
+    //         .execute();
 
-        const commentUser = await this.commentRepository.findOne({ id, user });
-        let deleted = null;
-        if (result && result[0].userId == user.id) {
-            deleted = await this.commentRepository.delete({ id });
-        } else if (commentUser) {
-            deleted = await this.commentRepository.delete({ id, user });
-            if (deleted.affected === 0) {
-                throw new NotFoundException(`id ${id}인 댓글을 찾을 수 없습니다.`);
-            }
-        } else {
-            throw new UnauthorizedException(
-                '댓글 삭제 권한이 없습니다.',
-            );
-        }
-    }
+    //     const query = this.commentRepository.createQueryBuilder('bc');
+    //     query.select('b.userId');
+    //     query.innerJoin(Board, 'b', 'bc.boardId = b.id');
+    //     query.where('bc.id = :id', { id });
+    //     const result = await query.getRawMany();
+
+    //     const commentUser = await this.commentRepository.findOne({ id, user });
+    //     let deleted = null;
+    //     if (result && result[0].userId == user.id) {
+    //         deleted = await this.commentRepository.delete({ id });
+    //     } else if (commentUser) {
+    //         deleted = await this.commentRepository.delete({ id, user });
+    //         if (deleted.affected === 0) {
+    //             throw new NotFoundException(`id ${id}인 댓글을 찾을 수 없습니다.`);
+    //         }
+    //     } else {
+    //         throw new UnauthorizedException(
+    //             '댓글 삭제 권한이 없습니다.',
+    //         );
+    //     }
+    // }
 }

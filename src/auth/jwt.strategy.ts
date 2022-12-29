@@ -14,14 +14,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private userRepository: UserRepository
     ) {
         super({
+            usernameField: 'user_id',
             secretOrKey: 'Secret1234',
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
         })
     }
 
     async validate(payload) {
-        const { username } = payload;
-        const user: User = await this.userRepository.findOne({ username });
+        const { user_id } = payload;
+        const user: User = await this.userRepository.findOne(user_id);
 
         if (!user) {
             throw new UnauthorizedException();

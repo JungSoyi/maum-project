@@ -1,13 +1,13 @@
-import { ConflictException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./user.entity";
-import { UpdateUserDto } from "./dto/user.dto";
-import { UserRepository } from "./user.repository";
-import { LoggerService } from "src/logger/logger.service";
-import { AuthCredentialsDto } from "src/auth/dto/auto-credential.dto";
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import *as bcrypt from 'bcryptjs';
+import { InjectRepository } from "@nestjs/typeorm";
+import * as bcrypt from 'bcryptjs';
+import { AuthCredentialsDto } from "src/auth/dto/auto-credential.dto";
 import { SignInDto } from "src/auth/dto/sign_in.dto";
+import { LoggerService } from "src/logger/logger.service";
+import { UpdateUserDto } from "./dto/user.dto";
+import { User } from "./user.entity";
+import { UserRepository } from "./user.repository";
 
 @Injectable()
 export class UserService {
@@ -27,7 +27,7 @@ export class UserService {
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<boolean> {
         try {
             this.logger.log('회원가입을 시작합니다.');
-            const { user_id, username, password } = authCredentialsDto;
+            const { username, password, user_id } = authCredentialsDto;
 
             this.logger.log('비밀번호를 암호화합니다.');
             const salt = await bcrypt.genSalt();
@@ -35,7 +35,7 @@ export class UserService {
 
             this.logger.log('새로운 사용자를 데이터베이스에 저장합니다.');
             const user = this.userRepository.create({
-                username, password: hashedPassword
+                user_id, username, password: hashedPassword
             });
             await this.userRepository.save(user);
             return user ? true : false;

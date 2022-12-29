@@ -7,23 +7,23 @@ export class Comment extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    commentText: string;
+
+    @Column()
+    commentStatus: boolean;
+
+    @Column()
+    createdDate: Date;
+
+    @Column()
+    updatedDate: Date;
+
     @ManyToOne((type) => User, (user) => user.id)
     user: User;
 
     @ManyToOne((type) => Board, (board) => board.id)
     board: Board;
-
-    @Column()
-    commentText: string;
-
-    @Column({ default: true })
-    commentStatus: boolean;
-
-    @Column({ default: () => 'CUURENT_TIMESTAMP' })
-    createdDate: Date;
-
-    @Column({ default: () => 'CUURENT_TIMESTAMP' })
-    updatedDate: Date;
 
 
 }
