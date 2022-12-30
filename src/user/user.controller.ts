@@ -106,7 +106,7 @@ export class UserController {
      * @description 유저의 정보를 조회합니다.
      * @param id 유저 아이디
      */
-    @Get('/user/:id')
+    @Get(':id')
     @ApiBearerAuth('access-token')
     @ApiOperation({
         summary: '유저 조회',
@@ -140,7 +140,7 @@ export class UserController {
      * @param updateUserDto 유저 정보
      * @returns 
      */
-    @Patch('/user/:id')
+    @Patch(':id')
     @UsePipes(ValidationPipe)
     @ApiBearerAuth('access-token')
     @ApiOperation({
@@ -161,7 +161,7 @@ export class UserController {
         },
     })
     setUser(
-        @Param('id', ParseUUIDPipe) id: number,
+        @Param(':id', ParseUUIDPipe) id: number,
         @Body() updateUserDto: UpdateUserDto,
     ): Promise<boolean> {
         /**
@@ -175,7 +175,25 @@ export class UserController {
      * @param id 유저아이디
      * @returns 
      */
-    @Delete('/user/delete')
+    @Delete()
+    @ApiBearerAuth('access-token')
+    @ApiOperation({
+        summary: '유저 탈퇴',
+        description: '유저 탈퇴 API'
+    })
+    @ApiCreatedResponse({
+        description: '성공여부',
+        schema: {
+            example: {
+                success: true,
+                data: [
+                    {
+                        message: 'true'
+                    },
+                ],
+            },
+        },
+    })
     deleteUser(@Query('id', ParseUUIDPipe) id: string): Promise<boolean> {
         return this.userService.deleteUser(id);
     }
