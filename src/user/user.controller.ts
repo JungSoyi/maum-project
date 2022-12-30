@@ -12,7 +12,6 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
-import { SignInDto } from "src/auth/dto/sign_in.dto";
 
 @Controller('user')
 @ApiTags('User')
@@ -46,8 +45,7 @@ export class UserController {
      * @param authCredentialsDto 
      * @returns 
      */
-    @Post('/login')
-    @UseGuards()
+    @Post('/signin')
     @ApiOperation({
         summary: '로그인 API',
         description: '아이디와 비밀번호를 이용해 로그인'
@@ -67,20 +65,14 @@ export class UserController {
             },
         },
     })
-    signIn(@Body(ValidationPipe) sign_in_dto: SignInDto): Promise<{ accessToken: string }> {
-        return this.userService.logIn(sign_in_dto);
+    signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
+        return this.userService.signIn(authCredentialsDto)
     }
 
-    @Post('/getuser')
-    @UseGuards(AuthGuard())
-    getUser(@GetUser() user: User) {
-
-    }
     /**
      * @description 전체 유저를 조회합니다.
      */
     @Get()
-    @UseGuards()
     @ApiBearerAuth('access-token')
     @ApiOperation({
         summary: '전체 유저 조회',
@@ -114,7 +106,7 @@ export class UserController {
      * @description 유저의 정보를 조회합니다.
      * @param id 유저 아이디
      */
-    @UseGuards()
+    @Get(':id')
     @ApiBearerAuth('access-token')
     @ApiOperation({
         summary: '유저 조회',
@@ -138,7 +130,6 @@ export class UserController {
             },
         },
     })
-    @Get('/user/:id')
     findByUserId(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
         return this.userService.findByUserId(id);
     }
@@ -149,7 +140,8 @@ export class UserController {
      * @param updateUserDto 유저 정보
      * @returns 
      */
-    @UseGuards()
+    @Patch(':id')
+    @UsePipes(ValidationPipe)
     @ApiBearerAuth('access-token')
     @ApiOperation({
         summary: '유저 정보 수정',
@@ -168,10 +160,8 @@ export class UserController {
             },
         },
     })
-    @Patch('/user/:id')
-    @UsePipes(ValidationPipe)
     setUser(
-        @Param('id', ParseUUIDPipe) id: number,
+        @Param(':id', ParseUUIDPipe) id: number,
         @Body() updateUserDto: UpdateUserDto,
     ): Promise<boolean> {
         /**
@@ -185,7 +175,7 @@ export class UserController {
      * @param id 유저아이디
      * @returns 
      */
-    @UseGuards()
+    @Delete()
     @ApiBearerAuth('access-token')
     @ApiOperation({
         summary: '유저 탈퇴',
@@ -204,7 +194,6 @@ export class UserController {
             },
         },
     })
-    @Delete('/user/delete')
     deleteUser(@Query('id', ParseUUIDPipe) id: string): Promise<boolean> {
         return this.userService.deleteUser(id);
     }

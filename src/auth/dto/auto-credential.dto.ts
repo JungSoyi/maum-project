@@ -3,13 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class AuthCredentialsDto {
 
-
-    /**사용자 아이디 */
-    @ApiProperty({
-        example: 'Soyi',
-        description: '사용자아이디',
-        required: true,
-    })
     @IsString()
     @IsNotEmpty()
     user_id: string;

@@ -3,7 +3,6 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from 'bcryptjs';
 import { AuthCredentialsDto } from "src/auth/dto/auto-credential.dto";
-import { SignInDto } from "src/auth/dto/sign_in.dto";
 import { LoggerService } from "src/logger/logger.service";
 import { UpdateUserDto } from "./dto/user.dto";
 import { User } from "./user.entity";
@@ -27,7 +26,7 @@ export class UserService {
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<boolean> {
         try {
             this.logger.log('회원가입을 시작합니다.');
-            const { username, password, user_id } = authCredentialsDto;
+            const { username, password } = authCredentialsDto;
 
             this.logger.log('비밀번호를 암호화합니다.');
             const salt = await bcrypt.genSalt();
@@ -35,7 +34,7 @@ export class UserService {
 
             this.logger.log('새로운 사용자를 데이터베이스에 저장합니다.');
             const user = this.userRepository.create({
-                user_id, username, password: hashedPassword
+                username, password: hashedPassword
             });
             await this.userRepository.save(user);
             return user ? true : false;
@@ -43,7 +42,7 @@ export class UserService {
         } catch (error) {
             throw new HttpException(
                 {
-                    message: 'SQL 에러',
+                    message: '이미 존재하는 사용자 이름입니다.',
                     error: error.sqlMessage,
                 },
                 HttpStatus.FORBIDDEN,
@@ -57,11 +56,11 @@ export class UserService {
      * @param sign_in_dto
      * @returns 
      */
-    async logIn(sign_in_dto: SignInDto): Promise<{ accessToken: string }> {
+    async signIn(sign_in_dto: AuthCredentialsDto): Promise<{ accessToken: string }> {
 
         this.logger.log('로그인을 시작합니다.');
-        const { user_id, password } = sign_in_dto;
-        const user = await this.userRepository.findOne({ user_id });
+        const { username, password } = sign_in_dto;
+        const user = await this.userRepository.findOne({ username });
 
         if (user && (await bcrypt.compare(password, user.password))) {
             const payload = { user_id };
