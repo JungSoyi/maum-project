@@ -2,12 +2,21 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './global/http-exception.filter';
+import { setupSwagger } from './global/swagger';
 
 declare const module: any;
 
 async function bootstrap() {
-  /*전역 예외필터설정*/
+
   const app = await NestFactory.create(AppModule);
+
+  const uploadPath = 'uploads';
+
+  if (!existsSync(uploadPath)) {
+    mkdirSync(uploadPath);
+  }
+
+  /*전역 예외필터설정*/
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableCors({
@@ -24,6 +33,8 @@ async function bootstrap() {
       disableErrorMessages: true,
     }),
   );
+
+  setupSwagger(app);
 
   const port = 4000;
   await app.listen(port);

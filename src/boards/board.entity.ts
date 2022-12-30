@@ -18,7 +18,13 @@ export class Board extends BaseEntity {
     @Column()
     status: BoardStatus;
 
-    @ManyToOne(type => User, user => user.boards, { eager: false })
+    @Column({ default: () => 'CURRENT_TIMESTAMP' })
+    createdDate: Date;
+
+    @Column({ default: () => 'CURRENT_TIMESTAMP' })
+    updatedDate: Date;
+
+    @ManyToOne(type => User, user => user.id)
     user: User;
 
     @Column()
