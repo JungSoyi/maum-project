@@ -1,9 +1,9 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { existsSync, mkdirSync } from 'fs';
 import { AppModule } from './app.module';
 import { setupSwagger } from './configs/swagger.config';
 import { HttpExceptionFilter } from './global/http-exception.filter';
-import { setupSwagger } from './global/swagger';
 
 declare const module: any;
 
