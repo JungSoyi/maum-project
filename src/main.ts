@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { setupSwagger } from './configs/swagger.config';
 import { HttpExceptionFilter } from './global/http-exception.filter';
 
 declare const module: any;
@@ -25,6 +26,7 @@ async function bootstrap() {
     }),
   );
 
+  setupSwagger(app);
   const port = 4000;
   await app.listen(port);
   Logger.log(`Application running on port ${port}`);

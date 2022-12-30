@@ -6,8 +6,15 @@ import { UpdateUserDto } from "./dto/user.dto";
 import { AuthCredentialsDto } from "src/auth/dto/auto-credential.dto";
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from "./get-user.decorator";
+import {
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiOperation,
+    ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('user')
+@ApiTags('User')
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
@@ -17,8 +24,20 @@ export class UserController {
      * @returns 
      */
     @Post('/signup')
-    signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<void> {
-        return this.userService.signUp(authCredentialsDto);
+    @ApiOperation({
+        summary: '회원가입',
+        description: '회원 가입 API'
+    })
+    @ApiCreatedResponse({
+        description: '성공여부',
+        schema: {
+            example: { success: true },
+        },
+    })
+    signUp(@Res() res: Response, @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto) {
+        return this.userService.signUp(authCredentialsDto).then((result) => {
+            res.status(HttpStatus.OK).json({ success: result });
+        });
     }
 
     /**
@@ -28,7 +47,7 @@ export class UserController {
      */
     @Post('/signin')
     signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
-        return this.userService.singIn(authCredentialsDto)
+        return this.userService.signIn(authCredentialsDto)
     }
 
     @Post('/getuser')

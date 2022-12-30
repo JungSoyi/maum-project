@@ -1,12 +1,12 @@
-import { ConflictException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./user.entity";
-import { UpdateUserDto } from "./dto/user.dto";
-import { UserRepository } from "./user.repository";
-import { LoggerService } from "src/logger/logger.service";
-import { AuthCredentialsDto } from "src/auth/dto/auto-credential.dto";
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import *as bcrypt from 'bcryptjs';
+import { InjectRepository } from "@nestjs/typeorm";
+import * as bcrypt from 'bcryptjs';
+import { AuthCredentialsDto } from "src/auth/dto/auto-credential.dto";
+import { LoggerService } from "src/logger/logger.service";
+import { UpdateUserDto } from "./dto/user.dto";
+import { User } from "./user.entity";
+import { UserRepository } from "./user.repository";
 
 @Injectable()
 export class UserService {
@@ -23,42 +23,43 @@ export class UserService {
      * 회원가입 서비스 로직
      * @param authCredentialsDto 
      */
-    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-
-        this.logger.log('회원가입을 시작합니다.');
-        const { username, password } = authCredentialsDto;
-
-        this.logger.log('비밀번호를 암호화합니다.');
-        const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        this.logger.log('새로운 사용자를 데이터베이스에 저장합니다.');
-        const user = this.userRepository.create({
-            username, password: hashedPassword
-        })
-
+    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<boolean> {
         try {
+            this.logger.log('회원가입을 시작합니다.');
+            const { username, password } = authCredentialsDto;
+
+            this.logger.log('비밀번호를 암호화합니다.');
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            this.logger.log('새로운 사용자를 데이터베이스에 저장합니다.');
+            const user = this.userRepository.create({
+                username, password: hashedPassword
+            });
             await this.userRepository.save(user);
+            return user ? true : false;
+
         } catch (error) {
-            if (error.code === '23505') {
-                this.logger.warn('이미 존재하는 사용자 이름입니다.');
-                throw new ConflictException('Existing Username');
-            } else {
-                throw new InternalServerErrorException();
-            }
+            throw new HttpException(
+                {
+                    message: '이미 존재하는 사용자 이름입니다.',
+                    error: error.sqlMessage,
+                },
+                HttpStatus.FORBIDDEN,
+            );
         }
 
     }
 
     /**
      * 로그인 서비스 로직
-     * @param authCredentialsDto 
+     * @param sign_in_dto
      * @returns 
      */
-    async singIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
+    async signIn(sign_in_dto: AuthCredentialsDto): Promise<{ accessToken: string }> {
 
         this.logger.log('로그인을 시작합니다.');
-        const { username, password } = authCredentialsDto;
+        const { username, password } = sign_in_dto;
         const user = await this.userRepository.findOne({ username });
 
         if (user && (await bcrypt.compare(password, user.password))) {
