@@ -142,6 +142,24 @@ export class UserController {
      */
     @Patch('/user/:id')
     @UsePipes(ValidationPipe)
+    @ApiBearerAuth('access-token')
+    @ApiOperation({
+        summary: '유저 정보 수정',
+        description: '유저 정보 수정 API'
+    })
+    @ApiCreatedResponse({
+        description: '성공여부',
+        schema: {
+            example: {
+                success: true,
+                data: [
+                    {
+
+                    },
+                ],
+            },
+        },
+    })
     setUser(
         @Param('id', ParseUUIDPipe) id: number,
         @Body() updateUserDto: UpdateUserDto,
