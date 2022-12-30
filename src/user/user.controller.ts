@@ -107,6 +107,29 @@ export class UserController {
      * @param id 유저 아이디
      */
     @Get('/user/:id')
+    @ApiBearerAuth('access-token')
+    @ApiOperation({
+        summary: '유저 조회',
+        description: '특정 유저 조회 API'
+    })
+    @ApiCreatedResponse({
+        description: '성공여부',
+        schema: {
+            example: {
+                success: true,
+                data: [
+                    {
+                        id: 'cea1d926-6f1b-4a37-a46c-8ddf0b17a0bc',
+                        user_id: 'Soyi',
+                        name: '정소이',
+                        createdAt: '2021-12-25T23:30:51.371Z',
+                        updatedAt: '2021-12-25T23:30:51.371Z',
+                        deletedAt: null,
+                    },
+                ],
+            },
+        },
+    })
     findByUserId(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
         return this.userService.findByUserId(id);
     }
