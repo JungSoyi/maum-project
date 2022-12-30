@@ -41,11 +41,30 @@ export class UserController {
     }
 
     /**
-     * username, password를 이용하여 로그인을 합니다.
+     * @description username, password를 이용하여 로그인을 합니다.
      * @param authCredentialsDto 
      * @returns 
      */
     @Post('/signin')
+    @ApiOperation({
+        summary: '로그인 API',
+        description: '아이디와 비밀번호를 이용해 로그인'
+    })
+    @ApiCreatedResponse({
+        description: '로그인 정보',
+        schema: {
+            example: {
+                id: 'cea1d926-6f1b-4a37-a46c-8ddf0b17a0bc',
+                user_id: 'Soyi',
+                name: '정소이',
+                createdAt: '2021-12-25T23:30:51.371Z',
+                updatedAt: '2021-12-25T23:30:51.371Z',
+                deletedAt: null,
+                token:
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNlYTFkOTI2LTZmMWItNGEzNy1hNDZjLThkZGYwYjE3YTBiYyIsInVzZXJfaWQiOiJSeWFuIiwic2FsdCI6IuyehOyLnCIsIm5hbWUiOiJSeWFuIiwiYWdlIjoyNSwiY3JlYXRlZEF0IjoiMjAyMS0xMi0yNVQyMzozMDo1MS4zNzFaIiwidXBkYXRlZEF0IjoiMjAyMS0xMi0yNVQyMzozMDo1MS4zNzFaIiwiZGVsZXRlZEF0IjpudWxsLCJpYXQiOjE2NDA1MDc0NzMsImV4cCI6MTY0MDUwNzUzM30.gm-Yf_C8szEOvcy-bK-r-CP4Nz6aCr1AgqvH8KonxvU',
+            },
+        },
+    })
     signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
         return this.userService.signIn(authCredentialsDto)
     }
